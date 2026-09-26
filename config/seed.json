@@ -1,0 +1,50 @@
+{
+  "zones": [
+    { "id": "Z-LOBBY",  "name": "Lobby" },
+    { "id": "Z-SERVER", "name": "Server Room" }
+  ],
+  "readers": [
+    { "id": "R-101", "zone": "Z-LOBBY" },
+    { "id": "R-102", "zone": "Z-SERVER" },
+    { "id": "R-103", "zone": "Z-LOBBY" },
+    { "id": "R-104", "zone": "Z-SERVER" },
+    { "id": "R-105", "zone": "Z-LOBBY" },
+    { "id": "R-106", "zone": "Z-SERVER" },
+    { "id": "R-107", "zone": "Z-LOBBY" },
+    { "id": "R-108", "zone": "Z-SERVER" },
+    { "id": "R-109", "zone": "Z-LOBBY" },
+    { "id": "R-110", "zone": "Z-SERVER" }
+  ],
+  "schedules": [
+    {
+      "id": "S-ALWAYS",
+      "name": "24/7",
+      "windows": [
+        { "days": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], "start": "00:00", "end": "24:00" }
+      ]
+    },
+    {
+      "id": "S-BUS",
+      "name": "Business Hours",
+      "windows": [
+        { "days": ["Mon", "Tue", "Wed", "Thu", "Fri"], "start": "07:00", "end": "18:00" }
+      ]
+    }
+  ],
+  "access_groups": [
+    { "id": "G-STAFF", "name": "Staff", "zones": ["Z-LOBBY"],  "schedule": "S-ALWAYS" },
+    { "id": "G-IT",    "name": "IT",    "zones": ["Z-SERVER"], "schedule": "S-BUS" }
+  ],
+  "cardholders": [
+    { "id": "CH-1", "name": "Alice", "access_groups": ["G-STAFF", "G-IT"],
+      "cards": [{ "number": "10001", "facility": 42 }] },
+    { "id": "CH-2", "name": "Bob", "access_groups": ["G-STAFF"],
+      "cards": [{ "number": "10002", "facility": 42 }] },
+    { "id": "CH-3", "name": "Carol", "status": "suspended", "access_groups": ["G-STAFF"],
+      "cards": [{ "number": "10003", "facility": 42 }] },
+    { "id": "CH-4", "name": "Dave", "status": "expired", "access_groups": ["G-STAFF"],
+      "cards": [{ "number": "10004", "facility": 42 }] },
+    { "id": "CH-5", "name": "Eve", "expires_on": "2026-01-01", "access_groups": ["G-STAFF"],
+      "cards": [{ "number": "10005", "facility": 42 }] }
+  ]
+}

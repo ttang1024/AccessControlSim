@@ -1,0 +1,9 @@
+{
+  "port": 5050,
+  "io_threads": 0,
+  "database": "acs.db",
+  "heartbeat_interval_seconds": 10,
+  "missed_heartbeats_before_offline": 3,
+  "event_queue_capacity": 65536,
+  "log_level": "info"
+}

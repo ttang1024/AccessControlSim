@@ -1,0 +1,13 @@
+# ThreadSanitizer suppressions. Keep this list short, and explain every entry.
+#
+# Asio's kqueue reactor (macOS) creates a descriptor_state on one thread and
+# passes the pointer to another thread through the kevent() syscall. The kernel
+# orders the write before the read, but TSan can't see through syscalls, so it
+# reports a race on the state's mutex flag.
+#
+# The ^ anchor matters. TSan matches patterns against each frame's full
+# demangled signature, parameter types included. Every Asio handler, ours too,
+# runs under scheduler::do_run_one(conditionally_enabled_mutex::scoped_lock&, ...),
+# so without the anchor this entry would hide real races in our handlers
+# (checked by planting a race in AccessRequestHandler).
+race:^asio::detail::conditionally_enabled_mutex::
