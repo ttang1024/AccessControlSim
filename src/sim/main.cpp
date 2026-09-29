@@ -108,7 +108,7 @@ Stats runReader(int index, const Options& options) {
                 break;
             }
         }
-        const auto card = kCards[pick(rng)];
+        const CardCredential& card = kCards[pick(rng)];
         const auto sent = std::chrono::steady_clock::now();
         const auto decision = reader.swipe(card);
         if (!decision) {

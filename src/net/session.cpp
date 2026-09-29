@@ -2,6 +2,7 @@
 
 #include <spdlog/spdlog.h>
 
+#include <array>
 #include <chrono>
 #include <exception>
 #include <utility>
@@ -104,8 +105,12 @@ void Session::handlePayload() {
 }
 
 void Session::writeResponse(std::string payload) {
-    m_outbound = encodeFrame(payload);
-    asio::async_write(m_socket, asio::buffer(m_outbound),
+    // A gather write sends header and payload in one call without first
+    // copying them into a combined buffer.
+    m_outboundHeader = encodeFrameHeader(static_cast<std::uint32_t>(payload.size()));
+    m_outbound = std::move(payload);
+    const std::array buffers{asio::buffer(m_outboundHeader), asio::buffer(m_outbound)};
+    asio::async_write(m_socket, buffers,
                       [self = shared_from_this()](std::error_code ec, std::size_t /*bytes*/) {
                           if (ec) {
                               return self->close();

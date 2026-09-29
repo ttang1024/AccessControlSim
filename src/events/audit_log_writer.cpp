@@ -24,9 +24,9 @@ void AuditLogWriter::run() {
             return;  // Closed and drained.
         }
         if (!m_repository.append(batch)) {
-            m_failedEvents += batch.size();
+            const std::size_t totalFailed = m_failedEvents += batch.size();
             spdlog::error("event=audit_write_failed events={} total_failed={}", batch.size(),
-                          m_failedEvents.load());
+                          totalFailed);
         }
     }
 }

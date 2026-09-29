@@ -45,6 +45,8 @@ public:
         // An empty batch means "closed", so never return one just because maxItems is 0.
         const std::size_t limit = std::max<std::size_t>(maxItems, 1);
         std::vector<T> batch;
+        // Reserve once so the vector doesn't reallocate while producers wait on the lock.
+        batch.reserve(std::min(limit, m_items.size()));
         while (!m_items.empty() && batch.size() < limit) {
             batch.push_back(std::move(m_items.front()));
             m_items.pop_front();

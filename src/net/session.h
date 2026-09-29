@@ -56,7 +56,8 @@ private:
     std::chrono::steady_clock::time_point m_deadline;  // Close if no frame by then.
     FrameHeader m_header{};
     std::string m_payload;
-    std::string m_outbound;
+    FrameHeader m_outboundHeader{};
+    std::string m_outbound;  // Reply payload; must stay alive until the write completes.
 };
 
 }  // namespace acs::net
