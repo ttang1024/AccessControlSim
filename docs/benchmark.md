@@ -66,6 +66,28 @@ writer kept up, with no drops and no write failures.
    three orders of magnitude of headroom, which is why ADR-004 rejected more
    complex threading.
 
+## Server CPU per request
+
+A one-off timing loop (1M iterations, `-O3`, not checked in) gave the cost
+of each server-side step for one request:
+
+| Step | Before | After |
+|---|---:|---:|
+| Parse the request (`parseInboundMessage`) | ~1.5 µs | ~1.5 µs |
+| Decide (`AccessDecisionEngine::decide`) | ~0.05 µs | ~0.05 µs |
+| Encode the reply (`serialize(AccessResponseMessage)`) | ~1.1–2.2 µs | ~0.05 µs |
+
+Encoding the reply used to build an `nlohmann::json` object, with a map
+node per key, before dumping it. It now writes the string directly, with
+byte-identical output. This was timed with the laptop on battery in Low
+Power Mode, so read the ratio (about 20×), not the absolute times.
+
+**End to end it makes no measurable difference.** An old-vs-new run of the
+tables above, alternating builds with 3 runs each, finished with medians
+within run-to-run noise. Saving ~1 µs of CPU barely matters next to a
+~21 µs round trip made mostly of syscalls (point 1 above). The tables were
+not re-recorded: that machine state roughly halved every figure.
+
 ## Limits of this benchmark
 
 - Client and server on one machine compete for CPU. Measuring the server's
@@ -76,6 +98,6 @@ writer kept up, with no drops and no write failures.
 - The snapshot is tiny (5 cards). With `std::map` lookups
   (ADR-001), decision cost grows as O(log n). At 100k cards that is about 17
   comparisons per lookup, which is still small next to the syscalls.
-- An engine-only microbenchmark (the decision cost alone, without the
-  network) would separate these costs. It isn't included, because it would
-  need a new `bench/` directory (see "How to work with me" in CLAUDE.md).
+- The per-step timings above came from a throwaway loop. A repeatable
+  microbenchmark would need a new `bench/` directory (see "How to work with
+  me" in CLAUDE.md).

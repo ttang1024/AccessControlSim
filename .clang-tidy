@@ -17,4 +17,6 @@ CheckOptions:
   - { key: readability-identifier-naming.FunctionCase,        value: camelBack }
   - { key: readability-identifier-naming.VariableCase,        value: camelBack }
   - { key: readability-identifier-naming.PrivateMemberPrefix, value: m_ }
-  - { key: readability-identifier-naming.ConstantPrefix,      value: k }
+  # Only named constants take the k prefix, not every const local variable.
+  - { key: readability-identifier-naming.ConstexprVariablePrefix, value: k }
+  - { key: readability-identifier-naming.GlobalConstantPrefix,    value: k }

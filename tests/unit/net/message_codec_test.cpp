@@ -2,6 +2,8 @@
 
 #include <gtest/gtest.h>
 
+#include <cstdint>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -130,6 +132,14 @@ TEST(MessageCodecTest, ParseAccessResponse_EverySerializedDecision_RoundTrips) {
         EXPECT_EQ(parsed->seq, 3U);
         EXPECT_EQ(parsed->decision, decision);
     }
+}
+
+TEST(MessageCodecTest, ParseAccessResponse_LargestSeq_RoundTrips) {
+    constexpr std::uint64_t kMaxSeq = std::numeric_limits<std::uint64_t>::max();
+    const auto parsed = parseAccessResponse(
+        serialize(AccessResponseMessage{.seq = kMaxSeq, .decision = engine::Decision::grant()}));
+    ASSERT_TRUE(parsed.has_value());
+    EXPECT_EQ(parsed->seq, kMaxSeq);
 }
 
 TEST(MessageCodecTest, ParseAccessResponse_InvalidResponses_ReturnNullopt) {
